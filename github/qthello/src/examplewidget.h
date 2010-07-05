@@ -42,10 +42,54 @@
  ****************************************************************************/
 
  #include <QWidget>
+ #include <QtGui>
+
  #include <QPushButton>
  #include <QVBoxLayout>
  #include <QTextBrowser>
  #include <QMaemo5InformationBox>
+ #include <QMaemo5ValueButton>
+ #include <QMaemo5ListPickSelector>
+
+static void populateListModel(QStandardItemModel *model)
+{
+    enum { ItemCount = 50 };
+
+    for (int i = 0; i < ItemCount; ++i) {
+        QStandardItem *item = new QStandardItem(QString("%1 coins").arg(i*12+5));
+        item->setTextAlignment(Qt::AlignCenter); // the Maemo 5 design spec recommends this.
+        item->setEditable(false); // prevent editing of the item
+        model->appendRow(item);
+    }
+}
+
+static void populateTableModel(QStandardItemModel *model)
+{
+    enum { ItemCount = 50 };
+
+    const char *itemNames[] = { "potion", "ring", "amulet", "wand", "figurine" };
+    const char *itemColors[] = { "black", "white", "red", "mauve", "blue", "green",
+                                 "yellow", "ultramarine", "pink", "purple" };
+
+    for (int i = 0; i < ItemCount; ++i) {
+        QList<QStandardItem*> row;
+        QStandardItem *item;
+        item = new QStandardItem((i % 10 == 0) ? QString(itemNames[i / 10]) : QString());
+        item->setEditable(false);
+        row.append(item);
+        item = new QStandardItem(QString("%1 %2").arg(QString(itemColors[i % 10])).
+                    arg(QString(itemNames[i / 10])));
+        item->setEditable(false);
+        row.append(item);
+        item = new QStandardItem(QString("%1 gold coins").arg(i * 10 + (i % 10) * 15 + 13));
+        item->setTextAlignment(Qt::AlignCenter); // the Maemo 5 design spec recommends this.
+        item->setEditable(false);
+        row.append(item);
+        model->appendRow(row);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
 
  class ExampleWidget : public QWidget
  {
@@ -58,14 +102,32 @@
          QPushButton *bannerButton = new QPushButton("Show a Banner");
          QPushButton *noteButton = new QPushButton("Show a Note");
          QPushButton *complexNoteButton = new QPushButton("Show a complex Note");
+         QPushButton *switchButton = new QPushButton("Show a another widget");
 
          layout->addWidget(bannerButton);
          layout->addWidget(noteButton);
          layout->addWidget(complexNoteButton);
+         layout->addWidget(switchButton);
 
          connect(bannerButton, SIGNAL(clicked()), SLOT(showBanner()));
          connect(noteButton, SIGNAL(clicked()), SLOT(showNote()));
          connect(complexNoteButton, SIGNAL(clicked()), SLOT(showComplexNote()));
+
+         ///////////////////////////
+//          initModel();
+          QStandardItemModel model(0, 1);
+          populateListModel(&model);
+          QStandardItemModel tableModel(0, 0);
+          populateTableModel(&tableModel);
+
+         QMaemo5ValueButton *button1 = new QMaemo5ValueButton("Value besides text");
+           button1->setValueLayout(QMaemo5ValueButton::ValueBesideText);
+           QMaemo5ListPickSelector *selector1 = new QMaemo5ListPickSelector;
+           selector1->setModel(&model);
+           // not setting the current index means that the value is empty.
+           button1->setPickSelector(selector1);
+           layout->addWidget(button1);
+
      }
 
  public slots:
@@ -90,5 +152,9 @@
          box->setTimeout(QMaemo5InformationBox::NoTimeout);
          box->exec();
      }
+// private:
+//     void initModel()
+//         {
+//         );
  };
 #endif // EXAMPLEWIDGET_H

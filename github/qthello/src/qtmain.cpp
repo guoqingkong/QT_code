@@ -23,7 +23,9 @@ int main(int argc, char *argv[])
 //        hello.set
 
         ExampleWidget w;
+        w.setAttribute(Qt::WA_Maemo5StackedWindow);
         w.show();
 
 	return app.exec();
 }
+
