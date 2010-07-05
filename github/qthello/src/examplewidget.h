@@ -53,7 +53,7 @@
 
 static void populateListModel(QStandardItemModel *model)
 {
-    enum { ItemCount = 50 };
+    enum { ItemCount = 5 };
 
     for (int i = 0; i < ItemCount; ++i) {
         QStandardItem *item = new QStandardItem(QString("%1 coins").arg(i*12+5));
@@ -121,12 +121,13 @@ static void populateTableModel(QStandardItemModel *model)
           populateTableModel(&tableModel);
 
          QMaemo5ValueButton *button1 = new QMaemo5ValueButton("Value besides text");
+         layout->addWidget(button1);
            button1->setValueLayout(QMaemo5ValueButton::ValueBesideText);
            QMaemo5ListPickSelector *selector1 = new QMaemo5ListPickSelector;
            selector1->setModel(&model);
            // not setting the current index means that the value is empty.
            button1->setPickSelector(selector1);
-           layout->addWidget(button1);
+
 
      }
 
